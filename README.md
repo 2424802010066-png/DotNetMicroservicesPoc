@@ -22,7 +22,7 @@ Mỗi microservice có **đúng 3 project** theo quy tắc đề bài:
 | Project | Vai trò | Loại |
 |---|---|---|
 | `XxxService.Api` | **Định nghĩa API** — các lệnh (Command), truy vấn (Query), sự kiện (Event) và lớp truyền dữ liệu (DTO) mà dịch vụ phơi ra ngoài. Đây là phần *cổng* (port) trong kiến trúc Ports & Adapters. | Class Library |
-| `XxxService` | **Triển khai** — command handler, query handler, notification handler, mô hình miền; các *bộ điều hợp* (adapter): Controller cho HTTP đến, Listener cho sự kiện qua hàng đợi, REST client cho HTTP đi. | ASP.NET Core Web API |
+| `XxxService` | **Triển khai** — command handler, query handler, notification handler, mô hình miền; các *bộ điều hợp*: Controller (HTTP đến), Listener (sự kiện qua hàng đợi), REST client (HTTP đi). | ASP.NET Core Web API |
 | `XxxService.Test` | **Kiểm thử** — unit test và integration test. | xUnit |
 
 Chiều phụ thuộc: `XxxService.Test` → `XxxService` → `XxxService.Api`
@@ -41,33 +41,37 @@ Chiều phụ thuộc: `XxxService.Test` → `XxxService` → `XxxService.Api`
 | 9 | `ProductService` | Danh mục sản phẩm bảo hiểm |
 | 10 | `DocumentService` | Sinh chứng chỉ PDF (JS Report) |
 
-→ **8 microservice × 3 project = 24 project** trong solution `DotNetMicroservicesPoc.sln`.
+→ **8 microservice × 3 project = 24 project** trong `DotNetMicroservicesPoc.sln`.
 
 ```
 DotNetMicroservicesPoc/
-├─ DotNetMicroservicesPoc.sln
-├─ docker-compose.yml
-├─ postgres/
-│  └─ createdatabases.sql
-└─ src/
-   ├─ AuthService/
-   │  ├─ AuthService.Api/        Commands/ Queries/ Events/ Dtos/
-   │  ├─ AuthService/            CommandHandlers/ QueryHandlers/ EventHandlers/
-   │  │                          Domain/ Controllers/ Listeners/ RestClients/
-   │  └─ AuthService.Test/       UnitTests/ IntegrationTests/
-   └─ … 7 microservice còn lại cùng cấu trúc
+├─ DotNetMicroservicesPoc.sln       24 project
+├─ docker-compose.yml               toàn bộ hạ tầng
+├─ src/                             8 microservice × 3 project
+├─ postgres/                        createdatabases.sql + backups/
+├─ eureka-server/                   Task #2.6
+├─ scripts/                         Task #2.8
+├─ Web/                             Task #2.9  (SPA VueJS)
+├─ BlazorWasmClient/                Task #2.10
+└─ AgentPortalApiGateway/           Task #2.11 (Ocelot)
 ```
 
 ## 2. Cài đặt môi trường (Task #2)
 
 | # | Yêu cầu | Trạng thái |
 |---|---|---|
-| 1 | MediatR + đăng ký DI | ✅ MediatR 12.4.1 ở 8 project triển khai, MediatR.Contracts 2.0.1 ở 8 project định nghĩa API |
+| 1 | MediatR + đăng ký DI | ✅ MediatR 12.4.1 (8 project triển khai), MediatR.Contracts 2.0.1 (8 project .Api) |
 | 2 | PostgreSQL ≥ 10.0 | ✅ PostgreSQL 16 |
-| 3 | RabbitMQ | ✅ rabbitmq:3-management |
+| 3 | RabbitMQ | ✅ RabbitMQ 3.13.7 (Erlang 26.2.5.16) |
 | 4 | Elasticsearch ≥ 6.0 | ✅ Elasticsearch 7.17.26 |
 | 5 | Docker + Docker Compose | ✅ Docker 29.7.2, Compose v5.4.0 |
-| 7 | Tạo các CSDL | ✅ 8 CSDL (xem `postgres/createdatabases.sql`) |
+| 6 | Thư mục `eureka-server` | ✅ |
+| 7 | Tạo các CSDL | ✅ 4 CSDL theo `postgres/createdatabases.sql` |
+| 8 | Thư mục `scripts` | ✅ |
+| 9 | Thư mục `Web` | ✅ |
+| 10 | Thư mục `BlazorWasmClient` | ✅ |
+| 11 | Thư mục `AgentPortalApiGateway` | ✅ |
+| — | **Build hệ thống** | ✅ **Build succeeded — 0 Warning(s), 0 Error(s)** |
 
 ### Chạy toàn bộ hạ tầng
 
@@ -75,12 +79,18 @@ DotNetMicroservicesPoc/
 docker compose up -d
 ```
 
-| Dịch vụ | Cổng | Ghi chú |
+| Dịch vụ | Cổng | Thông tin đăng nhập |
 |---|---|---|
-| PostgreSQL | **5433** | user/pass: `postgres` / `postgres` |
+| PostgreSQL | **5433** | `postgres` / `postgres` (và `lab_user` / `lab_pass`) |
 | RabbitMQ (AMQP) | **5673** | |
-| RabbitMQ (giao diện quản trị) | **15673** | `guest` / `guest` |
+| RabbitMQ (quản trị web) | **15673** | `guest` / `guest` |
 | Elasticsearch | **9200** | |
+
+### Cơ sở dữ liệu
+
+`postgres/createdatabases.sql` tạo user `lab_user` và 4 CSDL:
+`lab_netmicro_payments`, `lab_netmicro_jobs` (Hangfire), `lab_netmicro_policy`, `lab_netmicro_pricing`.
+File backup để nộp nằm ở `postgres/backups/` (định dạng custom, restore bằng `pg_restore` hoặc pgAdmin).
 
 ### Build
 
@@ -88,36 +98,42 @@ docker compose up -d
 dotnet build DotNetMicroservicesPoc.sln
 ```
 
-Kết quả: **Build succeeded — 0 Warning(s), 0 Error(s)**.
-
 ---
 
 ## 3. Những chỗ lệch so với đề bài (đã chuẩn hoá cho chạy được)
 
-**1. Không còn lớp `Startup.cs`.**
-Đề gợi ý `services.AddMediatR()` trong `Startup.ConfigureServices`. Từ .NET 6 trở đi,
-template Web API dùng *minimal hosting* nên không sinh ra `Startup.cs` nữa. Chỗ đăng ký
-tương đương là `builder.Services` ngay trong `Program.cs` — đã làm đúng như vậy.
+**1. Nguồn của 5 thư mục trong Task #2.6, #2.8 → #2.11.**
+Đề yêu cầu lấy các thư mục này từ `eureka-server.rar`, `scripts.rar`, `Web.rar`,
+`BlazorWasmClient.rar`, `AgentPortalApiGateway.rar`. **Các file nén này không được đính kèm cùng
+đề bài trên Elearning** (phần đính kèm chỉ có file PDF đề bài). Vì vậy các thư mục được lấy từ
+đúng dự án mã nguồn mở mà case study này dựa trên:
+[`asc-lab/dotnetcore-microservices-poc`](https://github.com/asc-lab/dotnetcore-microservices-poc)
+của Altkom Software & Consulting — chính là công ty được nhắc tới trong phần mở đầu của đề bài.
+File `postgres/createdatabases.sql` cũng lấy nguyên bản từ đó.
 
-**2. `Install-Package MediatR` → `dotnet add package`.**
-`Install-Package` là lệnh của Package Manager Console trong Visual Studio. Khi thao tác bằng
-dòng lệnh thì lệnh tương đương là `dotnet add package MediatR`. Kết quả trong `.csproj` giống hệt.
+**2. `AgentPortalApiGateway` và `BlazorWasmClient` nằm trong repo nhưng KHÔNG nằm trong solution build.**
+Hai project này là mã nguồn hoàn chỉnh, tham chiếu tới các kiểu dữ liệu thật trong những project
+`.Api` (ví dụ `CreateOfferResult`, `PersonDto`, `GetPolicyDetailsQueryResult`). Trong khi đó Task #1
+quy định rõ *"chỉ tạo tên, chưa viết code"*, nên các project `.Api` ở đây còn rỗng — đưa hai project
+kia vào solution sẽ sinh 57 lỗi biên dịch. Để giữ **build sạch 0 lỗi** đúng yêu cầu chấm điểm,
+thư mục vẫn được add vào repo nhưng `.csproj` không được add vào `.sln`. Khi nào các project `.Api`
+được viết code thật (bài thực hành sau) thì thêm vào là build được.
 
-**3. MediatR ghim bản 12.4.1.**
-Từ MediatR 13 (2025), thư viện chuyển sang giấy phép thương mại. Bản 12.4.1 là bản **MIT**
-cuối cùng — dùng bản này để dự án không vướng ràng buộc bản quyền.
+**3. Không còn lớp `Startup.cs`.**
+Đề gợi ý `services.AddMediatR()` trong `Startup.ConfigureServices`. Từ .NET 6, template Web API
+dùng *minimal hosting* nên không sinh `Startup.cs`. Chỗ đăng ký tương đương là `builder.Services`
+trong `Program.cs`.
 
-**4. Cổng hạ tầng khác mặc định.**
-Máy đã có sẵn PostgreSQL 16 ở cổng 5432 và một RabbitMQ của đồ án khác ở 5672. Để không
-đụng độ, hạ tầng của bài này dùng 5433 và 5673/15673.
+**4. `Install-Package MediatR` → `dotnet add package MediatR`.**
+`Install-Package` là lệnh của Package Manager Console trong Visual Studio; khi thao tác bằng dòng
+lệnh thì lệnh tương đương là `dotnet add package`. Kết quả ghi vào `.csproj` giống hệt.
 
-**5. `createdatabases.sql` được viết lại.**
-Đề yêu cầu lấy file này trong `postgres.rar`. File nén đó không được đính kèm cùng đề trên
-Elearning, nên file SQL được viết lại theo đúng danh sách microservice ở phụ lục đề bài,
-mỗi dịch vụ một CSDL riêng (*database-per-service*).
+**5. MediatR ghim bản 12.4.1.**
+Từ MediatR 13 (2025) thư viện chuyển sang giấy phép thương mại. Bản 12.4.1 là bản **MIT** cuối cùng.
 
-**6. Các thư mục từ file .rar chưa được add.**
-Các mục 2.6 và 2.8 → 2.11 yêu cầu add `eureka-server`, `scripts`, `Web`, `BlazorWasmClient`,
-`AgentPortalApiGateway` lấy từ các file `.rar`. Những file nén này không có trong phần đính
-kèm của đề trên Elearning nên chưa thực hiện được. Cấu trúc solution đã chừa sẵn chỗ để add
-vào khi có file.
+**6. Cổng hạ tầng khác mặc định.**
+Máy đã có sẵn PostgreSQL 16 ở 5432 và một RabbitMQ của đồ án khác ở 5672. Để không đụng độ, hạ tầng
+bài này dùng 5433 và 5673/15673 — khai báo đầy đủ trong `docker-compose.yml`.
+
+**7. `dotnet new sln` trên .NET 10 mặc định sinh `.slnx`.**
+Đã dùng `--format sln` để tạo file `.sln` cổ điển cho Visual Studio / Rider bản cũ đọc được.
