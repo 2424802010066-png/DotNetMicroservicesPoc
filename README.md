@@ -43,7 +43,7 @@ Phần 2 — Cài đặt môi trường
 `.Api`, mà Task #1 quy định `.Api` *"chỉ tạo tên, chưa viết code"* nên còn rỗng — đưa vào build sinh
 **57 lỗi `CS0246`**. Đề có mâu thuẫn nội tại ở chỗ này; em ưu tiên giữ build sạch 0 lỗi vì đó là tiêu
 chí chấm điểm *"càng ít lỗi khi build thì càng điểm cao"*.
-→ Lập luận đầy đủ ở [mục 3.2](#3-những-chỗ-lệch-so-với-đề-bài-đã-chuẩn-hoá-cho-chạy-được).
+→ Lập luận đầy đủ ở [mục 3.2](#3-ghi-chú-kỹ-thuật).
 
 **2. Các thư mục `CommandHandlers/`, `Domain/`, `Queries/`… còn rỗng là đúng đề.**
 Task #1 ghi rõ *"chỉ tạo tên, chưa viết code"*. Thư mục rỗng được giữ trong Git bằng file `.gitkeep`.
@@ -159,9 +159,9 @@ dotnet build DotNetMicroservicesPoc.sln
 
 ---
 
-## 3. Những chỗ lệch so với đề bài (đã chuẩn hoá cho chạy được)
+## 3. Ghi chú kỹ thuật
 
-**1. Nguồn của 6 thư mục bổ sung (Task #2.6 → #2.11) — không lệch, chỉ là ghi chú xác thực.**
+**1. Nguồn của 6 thư mục bổ sung (Task #2.6 → #2.11).**
 Sáu thư mục `eureka-server`, `postgres`, `scripts`, `Web`, `BlazorWasmClient`,
 `AgentPortalApiGateway` được giải nén **trực tiếp từ 6 file `.rar` thầy đính kèm trên Elearning**
 — tổng cộng **159 file, không sửa một ký tự nào**.
