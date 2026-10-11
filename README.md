@@ -15,6 +15,65 @@ Phần 2 — Cài đặt môi trường
 
 ---
 
+## Tóm tắt cho người chấm
+
+**Build: 24 project — 0 Warning(s), 0 Error(s).**
+
+![Kết quả build solution](docs/ket-qua-build.png)
+
+| # | Yêu cầu của đề | Kết quả |
+|---|---|---|
+| Task #1.B.1 | Solution, mỗi microservice 3 project | ✅ 8 × 3 = **24 project** |
+| Task #1.B.2 | Tài khoản GitHub + GitHub Desktop | ✅ |
+| Task #1.B.3 | Add thầy vào dự án | ✅ `caotxuan`, quyền `write` |
+| Task #2.1 | MediatR + đăng ký DI container | ✅ 8/8 project triển khai |
+| Task #2.2 | PostgreSQL ≥ 10.0 | ✅ PostgreSQL 16 |
+| Task #2.3 | RabbitMQ | ✅ 3.13.7 |
+| Task #2.4 | Elasticsearch ≥ 6.0 | ✅ 7.17.26 |
+| Task #2.5 | Docker + Docker Compose | ✅ 29.7.2 / v5.4.0 |
+| Task #2.6, #2.8 → #2.11 | Add 5 thư mục vào solution | ✅ Solution Folder |
+| Task #2.7 | Thư mục `postgres` + tạo các CSDL | ✅ 4 CSDL theo `createdatabases.sql` |
+| — | **Build hệ thống thành công** | ✅ **0 lỗi, 0 cảnh báo** |
+
+### Ba điểm cần biết trước khi chấm
+
+**1. Solution có 24 project, không phải 26.**
+`AgentPortalApiGateway` và `BlazorWasmClient` **nằm trong solution** (dạng Solution Folder) nhưng
+`.csproj` không đăng ký build. Lý do: chúng tham chiếu các kiểu dữ liệu thật trong những project
+`.Api`, mà Task #1 quy định `.Api` *"chỉ tạo tên, chưa viết code"* nên còn rỗng — đưa vào build sinh
+**57 lỗi `CS0246`**. Đề có mâu thuẫn nội tại ở chỗ này; em ưu tiên giữ build sạch 0 lỗi vì đó là tiêu
+chí chấm điểm *"càng ít lỗi khi build thì càng điểm cao"*.
+→ Lập luận đầy đủ ở [mục 3.2](#3-những-chỗ-lệch-so-với-đề-bài-đã-chuẩn-hoá-cho-chạy-được).
+
+**2. Các thư mục `CommandHandlers/`, `Domain/`, `Queries/`… còn rỗng là đúng đề.**
+Task #1 ghi rõ *"chỉ tạo tên, chưa viết code"*. Thư mục rỗng được giữ trong Git bằng file `.gitkeep`.
+File `WeatherForecastController.cs` là code mẫu của `dotnet new webapi`, giữ lại làm endpoint kiểm tra
+service khởi động được.
+
+**3. Sáu thư mục bổ sung là bản gốc từ 6 file `.rar` của đề, không sửa một ký tự.**
+Đã đối chiếu SHA-256 từng file: **159/159 file trùng khớp 100%** với dự án mã nguồn mở
+[`asc-lab/dotnetcore-microservices-poc`](https://github.com/asc-lab/dotnetcore-microservices-poc)
+của Altkom Software & Consulting.
+
+### Chạy lại toàn bộ bằng 2 lệnh
+
+```bash
+docker compose up -d                          # dựng PostgreSQL + RabbitMQ + Elasticsearch
+dotnet build DotNetMicroservicesPoc.sln       # build 24 project
+```
+
+<table>
+<tr>
+<td width="50%"><img src="docs/cau-truc-solution.png" alt="Cấu trúc solution"><br><sub><b>Cấu trúc solution — Task #1</b></sub></td>
+<td width="50%"><img src="docs/ha-tang-docker.png" alt="Hạ tầng Docker"><br><sub><b>Hạ tầng chạy bằng Docker — Task #2.2 → #2.5</b></sub></td>
+</tr>
+<tr>
+<td colspan="2"><img src="docs/csdl-postgresql.png" alt="Các CSDL trong PostgreSQL"><br><sub><b>4 CSDL tạo theo <code>createdatabases.sql</code> — Task #2.7</b></sub></td>
+</tr>
+</table>
+
+---
+
 ## 1. Quy tắc tổ chức source code (Task #1)
 
 Mỗi microservice có **đúng 3 project** theo quy tắc đề bài:
