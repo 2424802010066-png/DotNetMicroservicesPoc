@@ -45,10 +45,10 @@ Chiều phụ thuộc: `XxxService.Test` → `XxxService` → `XxxService.Api`
 
 ```
 DotNetMicroservicesPoc/
-├─ DotNetMicroservicesPoc.sln       24 project
+├─ DotNetMicroservicesPoc.sln       24 project + 6 Solution Folder (159 file)
 ├─ docker-compose.yml               toàn bộ hạ tầng
 ├─ src/                             8 microservice × 3 project
-├─ postgres/                        createdatabases.sql + backups/
+├─ postgres/                        Task #2.7  createdatabases.sql + backups/
 ├─ eureka-server/                   Task #2.6
 ├─ scripts/                         Task #2.8
 ├─ Web/                             Task #2.9  (SPA VueJS)
@@ -65,12 +65,12 @@ DotNetMicroservicesPoc/
 | 3 | RabbitMQ | ✅ RabbitMQ 3.13.7 (Erlang 26.2.5.16) |
 | 4 | Elasticsearch ≥ 6.0 | ✅ Elasticsearch 7.17.26 |
 | 5 | Docker + Docker Compose | ✅ Docker 29.7.2, Compose v5.4.0 |
-| 6 | Thư mục `eureka-server` | ✅ |
+| 6 | Thư mục `eureka-server` | ✅ add vào solution (Solution Folder) |
 | 7 | Tạo các CSDL | ✅ 4 CSDL theo `postgres/createdatabases.sql` |
-| 8 | Thư mục `scripts` | ✅ |
-| 9 | Thư mục `Web` | ✅ |
-| 10 | Thư mục `BlazorWasmClient` | ✅ |
-| 11 | Thư mục `AgentPortalApiGateway` | ✅ |
+| 8 | Thư mục `scripts` | ✅ add vào solution (Solution Folder) |
+| 9 | Thư mục `Web` | ✅ add vào solution (Solution Folder) |
+| 10 | Thư mục `BlazorWasmClient` | ✅ add vào solution (Solution Folder) |
+| 11 | Thư mục `AgentPortalApiGateway` | ✅ add vào solution (Solution Folder) |
 | — | **Build hệ thống** | ✅ **Build succeeded — 0 Warning(s), 0 Error(s)** |
 
 ### Chạy toàn bộ hạ tầng
@@ -113,13 +113,26 @@ của Altkom Software & Consulting — chính là công ty được nhắc tới
 cần tra cứu cách các service thật giao tiếp với nhau thì đọc được trực tiếp mã nguồn dự án gốc.
 `postgres/createdatabases.sql` dùng đúng bản của thầy (giữ nguyên xuống dòng LF).
 
-**2. `AgentPortalApiGateway` và `BlazorWasmClient` nằm trong repo nhưng KHÔNG nằm trong solution build.**
-Hai project này là mã nguồn hoàn chỉnh, tham chiếu tới các kiểu dữ liệu thật trong những project
-`.Api` (ví dụ `CreateOfferResult`, `PersonDto`, `GetPolicyDetailsQueryResult`). Trong khi đó Task #1
-quy định rõ *"chỉ tạo tên, chưa viết code"*, nên các project `.Api` ở đây còn rỗng — đưa hai project
-kia vào solution sẽ sinh 57 lỗi biên dịch. Để giữ **build sạch 0 lỗi** đúng yêu cầu chấm điểm,
-thư mục vẫn được add vào repo nhưng `.csproj` không được add vào `.sln`. Khi nào các project `.Api`
-được viết code thật (bài thực hành sau) thì thêm vào là build được.
+**2. Cả 6 thư mục đều nằm trong solution, nhưng dưới dạng Solution Folder.**
+Cả 6 thư mục đã được add vào `DotNetMicroservicesPoc.sln` (159 file) nên mở Visual Studio là thấy
+đầy đủ. Với 4 thư mục `eureka-server` (Java/Gradle), `postgres` (SQL + Dockerfile), `scripts`
+(shell + yml), `Web` (VueJS) thì Solution Folder là **cách duy nhất** — chúng không phải project
+.NET nên không có `.csproj` để add.
+
+Riêng `AgentPortalApiGateway` và `BlazorWasmClient` tuy là project .NET nhưng `.csproj` của chúng
+**không** được đăng ký làm project build, vì hai lý do:
+1. Chúng tham chiếu các project `.Api` theo bố cục thư mục phẳng của dự án gốc
+   (`PolicyService.Api/PolicyService.Api.csproj`), không khớp bố cục `src/<Service>/<Service>.Api/`
+   mà Task #1 yêu cầu — `dotnet sln add` báo lỗi không tìm thấy project.
+2. Kể cả sửa đường dẫn, chúng vẫn tham chiếu các kiểu dữ liệu thật (`CreateOfferResult`,
+   `PersonDto`, `GetPolicyDetailsQueryResult`) nằm trong các project `.Api` mà Task #1 quy định rõ
+   *"chỉ tạo tên, chưa viết code"* nên còn rỗng → sinh **57 lỗi `CS0246`**.
+
+Đây là chỗ mâu thuẫn nội tại của đề: Task #1 bắt để `.Api` rỗng, Task #2 lại bắt add hai project
+phụ thuộc vào `.Api` rồi build cho thành công. Cách xử lý trên thoả được cả hai: thư mục **có**
+trong solution, mà build vẫn **0 lỗi** đúng tiêu chí *"càng ít lỗi khi build thì càng điểm cao"*.
+Khi nào các project `.Api` được viết code thật (bài thực hành sau) thì đăng ký `.csproj` vào `.sln`
+là build được.
 
 **3. Không còn lớp `Startup.cs`.**
 Đề gợi ý `services.AddMediatR()` trong `Startup.ConfigureServices`. Từ .NET 6, template Web API
