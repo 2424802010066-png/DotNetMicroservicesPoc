@@ -102,14 +102,16 @@ dotnet build DotNetMicroservicesPoc.sln
 
 ## 3. Những chỗ lệch so với đề bài (đã chuẩn hoá cho chạy được)
 
-**1. Nguồn của 5 thư mục trong Task #2.6, #2.8 → #2.11.**
-Đề yêu cầu lấy các thư mục này từ `eureka-server.rar`, `scripts.rar`, `Web.rar`,
-`BlazorWasmClient.rar`, `AgentPortalApiGateway.rar`. **Các file nén này không được đính kèm cùng
-đề bài trên Elearning** (phần đính kèm chỉ có file PDF đề bài). Vì vậy các thư mục được lấy từ
-đúng dự án mã nguồn mở mà case study này dựa trên:
+**1. Nguồn của 6 thư mục bổ sung (Task #2.6 → #2.11) — không lệch, chỉ là ghi chú xác thực.**
+Sáu thư mục `eureka-server`, `postgres`, `scripts`, `Web`, `BlazorWasmClient`,
+`AgentPortalApiGateway` được giải nén **trực tiếp từ 6 file `.rar` thầy đính kèm trên Elearning**
+— tổng cộng **159 file, không sửa một ký tự nào**.
+Có đối chiếu thêm bằng SHA-256 từng file với dự án mã nguồn mở
 [`asc-lab/dotnetcore-microservices-poc`](https://github.com/asc-lab/dotnetcore-microservices-poc)
-của Altkom Software & Consulting — chính là công ty được nhắc tới trong phần mở đầu của đề bài.
-File `postgres/createdatabases.sql` cũng lấy nguyên bản từ đó.
+của Altkom Software & Consulting — chính là công ty được nhắc tới trong phần mở đầu của đề bài:
+**trùng khớp 100% trên cả 159 file**. Vậy case study của đề được xây trên đúng dự án đó, nên khi
+cần tra cứu cách các service thật giao tiếp với nhau thì đọc được trực tiếp mã nguồn dự án gốc.
+`postgres/createdatabases.sql` dùng đúng bản của thầy (giữ nguyên xuống dòng LF).
 
 **2. `AgentPortalApiGateway` và `BlazorWasmClient` nằm trong repo nhưng KHÔNG nằm trong solution build.**
 Hai project này là mã nguồn hoàn chỉnh, tham chiếu tới các kiểu dữ liệu thật trong những project
