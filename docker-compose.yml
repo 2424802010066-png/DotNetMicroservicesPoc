@@ -1,0 +1,73 @@
+# =============================================================================
+#  BAI THUC HANH SO 4 - Task #2.5: Docker va Docker Compose
+#  Toan bo ha tang cua he thong microservices duoc dung bang mot lenh:
+#      docker compose up -d
+#
+#  Sinh vien: Le Huu Anh Tai - 2424802010066 - D24CNTT05
+#
+#  GHI CHU VE CONG: may da co san PostgreSQL 16 (cong 5432) va mot RabbitMQ cua
+#  do an khac (cong 5672). De khong dung do, ha tang cua bai nay dung cong khac:
+#      PostgreSQL     5433   (thay vi 5432)
+#      RabbitMQ       5673   / giao dien quan tri 15673 (thay vi 5672 / 15672)
+#      Elasticsearch  9200   (khong trung)
+#      Eureka         8761
+# =============================================================================
+services:
+
+  # --- Task #2.2: PostgreSQL (yeu cau phien ban >= 10.0) ---
+  postgres:
+    image: postgres:16
+    container_name: poc-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - poc-postgres-data:/var/lib/postgresql/data
+      # Script nay tu chay lan dau tien khi volume con rong
+      - ./postgres/createdatabases.sql:/docker-entrypoint-initdb.d/createdatabases.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # --- Task #2.3: RabbitMQ (bus su kien bat dong bo giua cac microservice) ---
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: poc-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5673:5672"      # giao thuc AMQP
+      - "15673:15672"    # giao dien quan tri web
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+
+  # --- Task #2.4: Elasticsearch (yeu cau phien ban >= 6.0) ---
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.26
+    container_name: poc-elasticsearch
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - poc-es-data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9200 || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+
+volumes:
+  poc-postgres-data:
+  poc-es-data:

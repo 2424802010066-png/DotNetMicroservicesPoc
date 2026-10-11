@@ -1,0 +1,40 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+.vscode/
+.idea/
+*.swp
+
+# Build output
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+artifacts/
+publish/
+
+# NuGet
+*.nupkg
+packages/
+.nuget/
+
+# Rider
+.idea/
+*.sln.iml
+
+# Ket qua test
+TestResults/
+*.trx
+*.coverage
+
+# He dieu hanh
+Thumbs.db
+desktop.ini
+.DS_Store
