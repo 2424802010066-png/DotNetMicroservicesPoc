@@ -1,7 +1,7 @@
-# DotNetMicroservicesPoc — Bài thực hành số 4
+# DotNetMicroservicesPoc — Bài thực hành số 4 và số 5
 
 **Case study: Cài đặt kiến trúc Microservices trên .NET Core (bài toán đại lý bảo hiểm)**
-Phần 2 — Cài đặt môi trường
+Phần 2 — Cài đặt môi trường · Phần 3 — Dịch vụ Discovery và cài đặt Eureka
 
 | | |
 |---|---|
@@ -11,13 +11,27 @@ Phần 2 — Cài đặt môi trường
 | Nhóm | Nhóm 11 |
 | Môn | Thực hành Kiến trúc và Thiết kế phần mềm |
 | GVHD | ThS. Cao Thanh Xuân |
-| Ngày | 11/10/2026 |
+| Ngày | 11/10/2026 (bài 4) · 18/10/2026 (bài 5) |
 
 ---
 
 ## Tóm tắt cho người chấm
 
-**Build: 24 project — 0 Warning(s), 0 Error(s).**
+Repository này chứa **cả hai** bài thực hành:
+
+| Bài | Nội dung | Trạng thái |
+|---|---|---|
+| **Số 5** (18/10/2026) | Dịch vụ Discovery — cài đặt Eureka, bổ sung code `PricingService` | ✅ Eureka chạy ở `localhost:8761`, **PRICINGSERVICE — UP**; build 0 lỗi, **10/10 test Passed** |
+| **Số 4** (11/10/2026) | Cài đặt môi trường — solution, MediatR, PostgreSQL, RabbitMQ, Elasticsearch, Docker | ✅ **25 project**, build **0 Warning, 0 Error** |
+
+→ Nội dung bài 5 ở [mục ngay bên dưới](#bài-thực-hành-số-5--dịch-vụ-discovery-và-cài-đặt-eureka);
+nội dung bài 4 ở [phần sau đó](#bài-thực-hành-số-4--cài-đặt-môi-trường).
+
+### Bài thực hành số 4 — kết quả build
+
+**Build: 25 project — 0 Warning(s), 0 Error(s).**
+*(Ảnh chụp ở thời điểm nộp bài 4, khi solution có 24 project; bài 5 thêm
+`PricingService.IntegrationTest` thành 25.)*
 
 ![Kết quả build solution](docs/ket-qua-build.png)
 
@@ -73,6 +87,82 @@ dotnet build DotNetMicroservicesPoc.sln       # build 24 project
 </table>
 
 ---
+
+## Bài thực hành số 5 — Dịch vụ Discovery và cài đặt Eureka
+
+> Phần này là nội dung **mới nhất**. Nội dung bài thực hành số 4 nằm ở các mục phía dưới.
+
+**Eureka đang chạy ở `localhost:8761` và `PricingService` đã đăng ký, trạng thái UP.**
+
+![PricingService đã đăng ký với Eureka](docs/eureka-dang-ky.png)
+
+### Task #1 — Bổ sung code cho microservice PricingService
+
+| Nội dung | Kết quả |
+|---|---|
+| 3 project thầy gửi code (`.Api`, `.Test`, `.IntegrationTest`) | ✅ 17 tệp, copy nguyên vẹn |
+| Project triển khai `PricingService` | ✅ bổ sung Domain, Commands, Controllers, DataAccess, Init, Startup.cs |
+| Thêm `PricingService.IntegrationTest` vào solution | ✅ solution: 24 → **25 project** |
+| Build 4 project | ✅ **0 Error** |
+| Kiểm thử đơn vị | ✅ **10/10 Passed** |
+| Gọi thử `POST /api/Pricing` | ✅ **totalPrice = 98.00** (C1=26, C2=52, C3=20) |
+
+![Build và kiểm thử PricingService](docs/bai5-build-test.png)
+
+**Nguồn phần code bổ sung.** Ba tệp nén thầy gửi chỉ chứa `.Api`, `.Test`, `.IntegrationTest`,
+nhưng bộ test lại tham chiếu `PricingService.Domain`, `CalculatePriceHandler`, `PricingController`,
+`IDataStore` — những lớp nằm trong project **triển khai** mà các tệp nén không có. Đối chiếu
+SHA-256 cho thấy **17/17 tệp thầy gửi trùng khớp 100%** với
+[`asc-lab/dotnetcore-microservices-poc`](https://github.com/asc-lab/dotnetcore-microservices-poc),
+nên phần triển khai được lấy đúng từ dự án đó. Kết quả 10/10 test Passed xác nhận là khớp.
+
+### Task #2 — Cài đặt và cấu hình Eureka
+
+| # | Yêu cầu của đề | Kết quả |
+|---|---|---|
+| 1 | Tệp `application.yml` của máy chủ Eureka | ✅ đã có, bổ sung `waitTimeInMsWhenSyncEmpty: 0` cho khớp đề |
+| 2 | Chạy `localhost:8761` kiểm tra Eureka | ✅ hoạt động |
+| 3.1 | Thêm gói Steeltoe (Bước 1) | ✅ `Steeltoe.Discovery.ClientBase` + `.Eureka` 3.2.7 |
+| 3.2 | `AddDiscoveryClient` trong `Startup.cs` (Bước 2) | ✅ trong `ConfigureServices` |
+| 3.3 | Cấu hình `appsettings.json` (Bước 3) | ✅ `Spring.Application.Name`, `Eureka.Client`, `Eureka.Instance` |
+| 3.4 | Chạy dịch vụ, kiểm tra trên Eureka (Bước 4) | ✅ **PRICINGSERVICE — UP** tại `localhost:PricingService:5040` |
+
+### Chạy lại toàn bộ bài 5
+
+```bash
+docker compose up -d                                  # có cả Eureka ở cổng 8761
+dotnet run --project src/PricingService/PricingService # dịch vụ chạy ở cổng 5040
+```
+
+Mở `http://localhost:8761` sẽ thấy `PRICINGSERVICE` trong mục *Instances currently registered
+with Eureka*.
+
+### Bốn chỗ phải điều chỉnh so với hướng dẫn
+
+**1. Không gọi được `app.UseDiscoveryClient()`.**
+Lời gọi này thuộc **Steeltoe 2.x**; từ **Steeltoe 3.0** đã bị gỡ. Bản đang dùng (3.2.7) chỉ còn
+`AddDiscoveryClient` và `AddServiceDiscovery` — kiểm chứng được trong `Steeltoe.Discovery.ClientBase.xml`
+của chính gói đó. Lý do Steeltoe bỏ: `AddDiscoveryClient()` đã tự đăng ký một `IHostedService` lo
+việc đăng ký và huỷ đăng ký instance theo vòng đời ứng dụng. Cố gọi thì **không biên dịch được**.
+Thực tế chứng minh cách hiện tại là đủ — dịch vụ vẫn UP trên Eureka.
+
+**2. `eureka-server/Dockerfile` phải đổi image nền.**
+Bản gốc dùng `openjdk:8-jre-slim`. Image `openjdk` đã ngừng phát hành và các thẻ JRE cũ không còn
+trên Docker Hub (`not found`), nên đổi sang `eclipse-temurin:8-jre` — vẫn là JRE 8 chính chủ của
+Eclipse Adoptium, mã nguồn Eureka không phải sửa dòng nào.
+
+**3. Chuỗi kết nối PostgreSQL cần `SSL Mode=Disable`.**
+Không có tham số này, Npgsql thử bắt tay SSL với container không bật SSL và treo đến khi hết giờ
+(`Failed to connect to 127.0.0.1:5433 — The operation has timed out`), dù cổng vẫn mở.
+
+**4. Bốn project của PricingService giữ `net8.0`.**
+Các project khác dùng .NET 10, nhưng code mẫu thầy gửi khai báo `net8.0` và đề bài yêu cầu thao tác
+trên `Startup.cs` — lớp này không còn trong mô hình *minimal hosting* của .NET mới. Đề cũng khuyên
+*"đổi lại tên cho phù hợp với code mẫu thầy gửi"*. Máy có sẵn ASP.NET Core Runtime 8.0.31.
+
+---
+
+# Bài thực hành số 4 — Cài đặt môi trường
 
 ## 1. Quy tắc tổ chức source code (Task #1)
 
