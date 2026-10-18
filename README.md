@@ -21,7 +21,7 @@ Repository này chứa **cả hai** bài thực hành:
 
 | Bài | Nội dung | Trạng thái |
 |---|---|---|
-| **Số 5** (18/10/2026) | Dịch vụ Discovery — cài đặt Eureka, bổ sung code `PricingService` | ✅ Eureka chạy ở `localhost:8761`, **PRICINGSERVICE — UP**; build 0 lỗi, **10/10 test Passed** |
+| **Số 5** (18/10/2026) | Dịch vụ Discovery — cài đặt Eureka, bổ sung code `PricingService` | ✅ Eureka chạy ở `localhost:8761`, **PRICINGSERVICE — UP**; build 0 lỗi, **10/10 unit test** + **2/2 integration test Passed** |
 | **Số 4** (11/10/2026) | Cài đặt môi trường — solution, MediatR, PostgreSQL, RabbitMQ, Elasticsearch, Docker | ✅ **25 project**, build **0 Warning, 0 Error** |
 
 → Nội dung bài 5 ở [mục ngay bên dưới](#bài-thực-hành-số-5--dịch-vụ-discovery-và-cài-đặt-eureka);
@@ -104,7 +104,8 @@ dotnet build DotNetMicroservicesPoc.sln       # build 24 project
 | Project triển khai `PricingService` | ✅ bổ sung Domain, Commands, Controllers, DataAccess, Init, Startup.cs |
 | Thêm `PricingService.IntegrationTest` vào solution | ✅ solution: 24 → **25 project** |
 | Build 4 project | ✅ **0 Error** |
-| Kiểm thử đơn vị | ✅ **10/10 Passed** |
+| Kiểm thử đơn vị (`PricingService.Test`) | ✅ **10/10 Passed** |
+| Kiểm thử tích hợp (`PricingService.IntegrationTest`) | ✅ **2/2 Passed** — tự dựng PostgreSQL riêng bằng Testcontainers |
 | Gọi thử `POST /api/Pricing` | ✅ **totalPrice = 98.00** (C1=26, C2=52, C3=20) |
 
 ![Build và kiểm thử PricingService](docs/bai5-build-test.png)
@@ -114,7 +115,8 @@ nhưng bộ test lại tham chiếu `PricingService.Domain`, `CalculatePriceHand
 `IDataStore` — những lớp nằm trong project **triển khai** mà các tệp nén không có. Đối chiếu
 SHA-256 cho thấy **17/17 tệp thầy gửi trùng khớp 100%** với
 [`asc-lab/dotnetcore-microservices-poc`](https://github.com/asc-lab/dotnetcore-microservices-poc),
-nên phần triển khai được lấy đúng từ dự án đó. Kết quả 10/10 test Passed xác nhận là khớp.
+nên phần triển khai được lấy đúng từ dự án đó. Kết quả **10/10 unit test** và **2/2 integration
+test** Passed xác nhận là khớp ở cả mức lớp lẫn mức hệ thống.
 
 ### Task #2 — Cài đặt và cấu hình Eureka
 
@@ -131,7 +133,7 @@ nên phần triển khai được lấy đúng từ dự án đó. Kết quả 1
 
 **Cần có trước:** Docker Desktop và **.NET 8 Runtime**
 ([tải tại đây](https://dotnet.microsoft.com/download/dotnet/8.0)) — bốn project của PricingService
-để `net8.0` theo đúng code mẫu, xem lý do ở mục 4 bên dưới. Kiểm tra nhanh bằng
+để `net8.0` theo đúng code mẫu, xem lý do ở mục 5 bên dưới. Kiểm tra nhanh bằng
 `dotnet --list-runtimes`, cần thấy dòng `Microsoft.AspNetCore.App 8.x`.
 
 ```bash
@@ -148,7 +150,7 @@ with Eureka*.
 > HTTP_PROXY= HTTPS_PROXY= dotnet run --project src/PricingService/PricingService
 > ```
 
-### Bốn chỗ phải điều chỉnh so với hướng dẫn
+### Năm chỗ phải điều chỉnh so với hướng dẫn
 
 **1. Không gọi được `app.UseDiscoveryClient()`.**
 Lời gọi này thuộc **Steeltoe 2.x**; từ **Steeltoe 3.0** đã bị gỡ. Bản đang dùng (3.2.7) chỉ còn
@@ -162,11 +164,19 @@ Bản gốc dùng `openjdk:8-jre-slim`. Image `openjdk` đã ngừng phát hành
 trên Docker Hub (`not found`), nên đổi sang `eclipse-temurin:8-jre` — vẫn là JRE 8 chính chủ của
 Eclipse Adoptium, mã nguồn Eureka không phải sửa dòng nào.
 
-**3. Chuỗi kết nối PostgreSQL cần `SSL Mode=Disable`.**
+**3. Sửa một lỗi tiềm ẩn phát hiện khi chạy kiểm thử tích hợp.**
+Lần chạy `PricingService.IntegrationTest` đầu tiên bị 1 FAIL/2: test nhận HTTP 500 thay vì 200.
+Nguyên nhân: `app.UseInitializer()` trong `Startup.Configure` là một `async Task` (nạp 4 biểu phí
+mẫu vào CSDL) nhưng được gọi mà **không chờ kết quả**, nên việc nạp chạy nền trong khi pipeline đã
+mở cho request vào. Chạy bình thường không ai thấy, nhưng bộ test gửi request ngay sau khi host
+khởi động nên đọc phải CSDL rỗng → biểu phí null → lỗi 500. Đã sửa: chờ nạp xong rồi mới mở
+pipeline. Sau khi sửa **2/2 Passed**, dịch vụ vẫn đăng ký Eureka bình thường.
+
+**4. Chuỗi kết nối PostgreSQL cần `SSL Mode=Disable`.**
 Không có tham số này, Npgsql thử bắt tay SSL với container không bật SSL và treo đến khi hết giờ
 (`Failed to connect to 127.0.0.1:5433 — The operation has timed out`), dù cổng vẫn mở.
 
-**4. Bốn project của PricingService giữ `net8.0`.**
+**5. Bốn project của PricingService giữ `net8.0`.**
 Các project khác dùng .NET 10, nhưng code mẫu thầy gửi khai báo `net8.0` và đề bài yêu cầu thao tác
 trên `Startup.cs` — lớp này không còn trong mô hình *minimal hosting* của .NET mới. Đề cũng khuyên
 *"đổi lại tên cho phù hợp với code mẫu thầy gửi"*. Máy có sẵn ASP.NET Core Runtime 8.0.31.
