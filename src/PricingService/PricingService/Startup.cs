@@ -48,7 +48,13 @@ public class Startup
             app.UseSwaggerUI();
         }
 
-        app.UseInitializer();
+        // UseInitializer() la async Task (nap 4 bieu phi mau vao CSDL). Ban goc goi
+        // ma KHONG cho ket qua -> viec nap chay nen, ung dung nhan request ngay khi
+        // du lieu chua co. Chay binh thuong thi khong thay vi nguoi dung go cham hon
+        // vai giay, nhung PricingService.IntegrationTest gui request ngay sau khi host
+        // khoi dong nen doc phai CSDL rong -> tariff null -> HTTP 500.
+        // Cho nap xong roi moi mo pipeline thi het.
+        app.UseInitializer().GetAwaiter().GetResult();
 
         // Bai thuc hanh so 5 - Task #2, Buoc 2.
         // De bai huong dan goi them app.UseDiscoveryClient() trong Configure(). Goi do
