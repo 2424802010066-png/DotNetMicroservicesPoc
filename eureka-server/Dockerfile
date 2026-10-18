@@ -3,7 +3,10 @@ COPY --chown=gradle:gradle . /home/gradle/eureka-server
 WORKDIR /home/gradle/eureka-server
 RUN gradle build --no-daemon
 
-FROM openjdk:8-jre-slim
+# Ban goc dung "openjdk:8-jre-slim". Image openjdk da bi deprecated va cac tag JRE
+# cu khong con tren Docker Hub (build bao "not found"), nen doi sang ban JRE 8 chinh
+# chu cua Eclipse Adoptium - van la Java 8, khong doi gi ve ma nguon.
+FROM eclipse-temurin:8-jre
 
 EXPOSE 8761
 

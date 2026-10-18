@@ -1,34 +1,46 @@
-var builder = WebApplication.CreateBuilder(args);
+﻿using System;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
+using Serilog;
+using Serilog.Events;
 
-// Add services to the container.
+namespace PricingService;
 
-builder.Services.AddControllers();
-
-// --- Task #2.1: dang ky MediatR vao DI container ---
-// De bai goi y "services.AddMediatR() trong lop Startup, phuong thuc ConfigureServices".
-// .NET 10 dung mo hinh minimal hosting nen khong con lop Startup; cho dang ky tuong duong
-// la builder.Services ngay trong Program.cs (xem ghi chu trong BAOCAO.md).
-builder.Services.AddMediatR(cfg =>
+public class Program
 {
-    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
-    cfg.RegisterServicesFromAssembly(typeof(PricingService.Api.AssemblyMarker).Assembly);
-});
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+    public static void Main(string[] args)
+    {
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+            .Enrich.FromLogContext()
+            .WriteTo.Console()
+            .CreateLogger();
 
-var app = builder.Build();
+        try
+        {
+            Log.Information("Starting web host");
+            CreateWebHostBuilder(args)
+                .Build()
+                .Run();
+        }
+        catch (Exception ex)
+        {
+            Log.Fatal(ex, "Host terminated unexpectedly");
+        }
+        finally
+        {
+            Log.CloseAndFlush();
+        }
+    }
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
+    public static IHostBuilder CreateWebHostBuilder(string[] args)
+    {
+        return Host.CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+                webBuilder.UseSerilog();
+            });
+    }
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
-

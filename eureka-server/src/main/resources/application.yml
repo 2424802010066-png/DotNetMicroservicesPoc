@@ -9,3 +9,15 @@ eureka:
     fetchRegistry: false
     serviceUrl:
       defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+  server:
+    # Bai thuc hanh so 5, nhiem vu 1: de bai yeu cau co muc nay.
+    # Khong cho may chu doi dong bo voi peer khac khi registry con rong -
+    # chay mot minh (standalone) thi san sang nhan dang ky ngay.
+    waitTimeInMsWhenSyncEmpty: 0
+
+    # Che do tu bao ve: khi so nhip tim nhan duoc thap hon nguong, Eureka giu
+    # lai cac instance da het han va hien canh bao do tren trang chu. Nguong
+    # duoc tinh theo so instance dang ky, nen mot moi truong hoc tap chi co
+    # mot dich vu se luon chay duoi nguong. Tat di de trang chu phan anh dung
+    # thuc te. Moi truong that nen de true.
+    enableSelfPreservation: false

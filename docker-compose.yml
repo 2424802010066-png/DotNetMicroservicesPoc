@@ -14,6 +14,21 @@
 # =============================================================================
 services:
 
+  # --- BAI 5, Task #2: may chu Eureka (service discovery) ---
+  # Build tu thu muc eureka-server cua de bai (Spring Boot + Gradle).
+  # Giao dien web o http://localhost:8761 - noi kiem tra PricingService da dang ky chua.
+  eureka:
+    build: ./eureka-server
+    image: lab-eureka-server
+    container_name: poc-eureka
+    ports:
+      - "8761:8761"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8761/eureka/apps || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+
   # --- Task #2.2: PostgreSQL (yeu cau phien ban >= 10.0) ---
   postgres:
     image: postgres:16
