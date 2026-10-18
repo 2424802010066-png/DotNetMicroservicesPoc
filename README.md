@@ -129,6 +129,11 @@ nên phần triển khai được lấy đúng từ dự án đó. Kết quả 1
 
 ### Chạy lại toàn bộ bài 5
 
+**Cần có trước:** Docker Desktop và **.NET 8 Runtime**
+([tải tại đây](https://dotnet.microsoft.com/download/dotnet/8.0)) — bốn project của PricingService
+để `net8.0` theo đúng code mẫu, xem lý do ở mục 4 bên dưới. Kiểm tra nhanh bằng
+`dotnet --list-runtimes`, cần thấy dòng `Microsoft.AspNetCore.App 8.x`.
+
 ```bash
 docker compose up -d                                  # có cả Eureka ở cổng 8761
 dotnet run --project src/PricingService/PricingService # dịch vụ chạy ở cổng 5040
@@ -136,6 +141,12 @@ dotnet run --project src/PricingService/PricingService # dịch vụ chạy ở 
 
 Mở `http://localhost:8761` sẽ thấy `PRICINGSERVICE` trong mục *Instances currently registered
 with Eureka*.
+
+> **Nếu dịch vụ không đăng ký được với Eureka** và log báo `Cannot execute request on any known
+> server`: máy đang bật proxy không bỏ qua localhost. Chạy lại với proxy tắt cho riêng tiến trình:
+> ```bash
+> HTTP_PROXY= HTTPS_PROXY= dotnet run --project src/PricingService/PricingService
+> ```
 
 ### Bốn chỗ phải điều chỉnh so với hướng dẫn
 
