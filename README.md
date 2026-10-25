@@ -1,7 +1,7 @@
-# DotNetMicroservicesPoc — Bài thực hành số 4, 5 và 6
+# DotNetMicroservicesPoc - Bài thực hành số 4, 5 và 6
 
 **Case study: Cài đặt kiến trúc Microservices trên .NET Core (bài toán đại lý bảo hiểm)**
-Phần 2 — Cài đặt môi trường · Phần 3 — Dịch vụ Discovery và Eureka · Phần 4 — API Gateway với Ocelot
+Phần 2 - Cài đặt môi trường · Phần 3 - Dịch vụ Discovery và Eureka · Phần 4 - API Gateway với Ocelot
 
 | | |
 |---|---|
@@ -22,14 +22,14 @@ Repository này chứa **cả hai** bài thực hành:
 | Bài | Nội dung | Trạng thái |
 |---|---|---|
 | **Số 6** (25/10/2026) | API Gateway với Ocelot; bổ sung AuthService, ChatService, DashboardService | ✅ Solution **29 project**, build **0 Error**; Ocelot cấu hình khớp đề |
-| **Số 5** (18/10/2026) | Dịch vụ Discovery — cài đặt Eureka, bổ sung code `PricingService` | ✅ Eureka chạy ở `localhost:8761`, **PRICINGSERVICE — UP**; build 0 lỗi, **10/10 unit test** + **2/2 integration test Passed** |
-| **Số 4** (11/10/2026) | Cài đặt môi trường — solution, MediatR, PostgreSQL, RabbitMQ, Elasticsearch, Docker | ✅ **25 project**, build **0 Warning, 0 Error** |
+| **Số 5** (18/10/2026) | Dịch vụ Discovery - cài đặt Eureka, bổ sung code `PricingService` | ✅ Eureka chạy ở `localhost:8761`, **PRICINGSERVICE - UP**; build 0 lỗi, **10/10 unit test** + **2/2 integration test Passed** |
+| **Số 4** (11/10/2026) | Cài đặt môi trường - solution, MediatR, PostgreSQL, RabbitMQ, Elasticsearch, Docker | ✅ **25 project**, build **0 Warning, 0 Error** |
 
 → [Bài 6](#bài-thực-hành-số-6--api-gateway-với-ocelot) · [Bài 5](#bài-thực-hành-số-5--dịch-vụ-discovery-và-cài-đặt-eureka) · [Bài 4](#bài-thực-hành-số-4--cài-đặt-môi-trường)
 
-### Bài thực hành số 4 — kết quả build
+### Bài thực hành số 4 - kết quả build
 
-**Build: 25 project — 0 Warning(s), 0 Error(s).**
+**Build: 25 project - 0 Warning(s), 0 Error(s).**
 *(Ảnh chụp ở thời điểm nộp bài 4, khi solution có 24 project; bài 5 thêm
 `PricingService.IntegrationTest` thành 25.)*
 
@@ -47,14 +47,14 @@ Repository này chứa **cả hai** bài thực hành:
 | Task #2.5 | Docker + Docker Compose | ✅ 29.7.2 / v5.4.0 |
 | Task #2.6, #2.8 → #2.11 | Add 5 thư mục vào solution | ✅ Solution Folder |
 | Task #2.7 | Thư mục `postgres` + tạo các CSDL | ✅ 4 CSDL theo `createdatabases.sql` |
-| — | **Build hệ thống thành công** | ✅ **0 lỗi, 0 cảnh báo** |
+| - | **Build hệ thống thành công** | ✅ **0 lỗi, 0 cảnh báo** |
 
 ### Ba điểm cần biết trước khi chấm
 
 **1. Solution có 24 project, không phải 26.**
 `AgentPortalApiGateway` và `BlazorWasmClient` **nằm trong solution** (dạng Solution Folder) nhưng
 `.csproj` không đăng ký build. Lý do: chúng tham chiếu các kiểu dữ liệu thật trong những project
-`.Api`, mà Task #1 quy định `.Api` *"chỉ tạo tên, chưa viết code"* nên còn rỗng — đưa vào build sinh
+`.Api`, mà Task #1 quy định `.Api` *"chỉ tạo tên, chưa viết code"* nên còn rỗng - đưa vào build sinh
 **57 lỗi `CS0246`**. Đề có mâu thuẫn nội tại ở chỗ này; em ưu tiên giữ build sạch 0 lỗi vì đó là tiêu
 chí chấm điểm *"càng ít lỗi khi build thì càng điểm cao"*.
 → Lập luận đầy đủ ở [mục 3.2](#3-ghi-chú-kỹ-thuật).
@@ -78,17 +78,17 @@ dotnet build DotNetMicroservicesPoc.sln       # build 24 project
 
 <table>
 <tr>
-<td width="50%"><img src="docs/cau-truc-solution.png" alt="Cấu trúc solution"><br><sub><b>Cấu trúc solution — Task #1</b></sub></td>
-<td width="50%"><img src="docs/ha-tang-docker.png" alt="Hạ tầng Docker"><br><sub><b>Hạ tầng chạy bằng Docker — Task #2.2 → #2.5</b></sub></td>
+<td width="50%"><img src="docs/cau-truc-solution.png" alt="Cấu trúc solution"><br><sub><b>Cấu trúc solution - Task #1</b></sub></td>
+<td width="50%"><img src="docs/ha-tang-docker.png" alt="Hạ tầng Docker"><br><sub><b>Hạ tầng chạy bằng Docker - Task #2.2 → #2.5</b></sub></td>
 </tr>
 <tr>
-<td colspan="2"><img src="docs/csdl-postgresql.png" alt="Các CSDL trong PostgreSQL"><br><sub><b>4 CSDL tạo theo <code>createdatabases.sql</code> — Task #2.7</b></sub></td>
+<td colspan="2"><img src="docs/csdl-postgresql.png" alt="Các CSDL trong PostgreSQL"><br><sub><b>4 CSDL tạo theo <code>createdatabases.sql</code> - Task #2.7</b></sub></td>
 </tr>
 </table>
 
 ---
 
-## Bài thực hành số 6 — API Gateway với Ocelot
+## Bài thực hành số 6 - API Gateway với Ocelot
 
 > Phần này là nội dung **mới nhất**.
 
@@ -96,27 +96,27 @@ dotnet build DotNetMicroservicesPoc.sln       # build 24 project
 
 ![Build toàn bộ solution sau bài 6](docs/bai6-build-solution.png)
 
-### Task #1 — Cài đặt và cấu hình Ocelot cho `AgentPortalApiGateway`
+### Task #1 - Cài đặt và cấu hình Ocelot cho `AgentPortalApiGateway`
 
 | Yêu cầu của đề | Kết quả |
 |---|---|
 | Gói `Ocelot.Provider.Eureka` | ✅ bản 23.3.3 |
 | Gói `Ocelot.Cache.CacheManager` | ✅ bản 23.3.3 |
 | Tệp `ocelot.json` | ✅ 7 tuyến định tuyến |
-| `Program.cs` — `UseUrls("http://localhost:8099")` | ✅ |
-| `Program.cs` — `AddOcelot().AddEureka().AddCacheManager(x => x.WithDictionaryHandle())` | ✅ |
-| `Program.cs` — `a.UseOcelot().Wait()` | ✅ |
-| `Program.cs` — `AddJsonFile("ocelot.json", false, false)` | ✅ |
-| `appsettings.json` — `spring.application.name` = `Agent-Portal-Api-Gateway` | ✅ |
-| `appsettings.json` — `eureka.client.serviceUrl` / `shouldRegisterWithEureka` / `validateCertificates` | ✅ |
-| `GlobalConfiguration` — `RequestIdKey`, `AdministrationPath`, `UseServiceDiscovery`, `ServiceDiscoveryProvider` | ✅ khớp 100% |
+| `Program.cs` - `UseUrls("http://localhost:8099")` | ✅ |
+| `Program.cs` - `AddOcelot().AddEureka().AddCacheManager(x => x.WithDictionaryHandle())` | ✅ |
+| `Program.cs` - `a.UseOcelot().Wait()` | ✅ |
+| `Program.cs` - `AddJsonFile("ocelot.json", false, false)` | ✅ |
+| `appsettings.json` - `spring.application.name` = `Agent-Portal-Api-Gateway` | ✅ |
+| `appsettings.json` - `eureka.client.serviceUrl` / `shouldRegisterWithEureka` / `validateCertificates` | ✅ |
+| `GlobalConfiguration` - `RequestIdKey`, `AdministrationPath`, `UseServiceDiscovery`, `ServiceDiscoveryProvider` | ✅ khớp 100% |
 | Tuyến `[serviceHost:port]/api/Products/{code}` → `ProductService` | ✅ |
 
 `AgentPortalApiGateway` nay đã là **project thật trong solution**. Ở bài 4 nó mới chỉ nằm trong
 repository dưới dạng Solution Folder, vì lúc đó các project `.Api` còn rỗng nên đưa vào sẽ sinh lỗi
 biên dịch. Sau bài 5 và bài 6, các `.Api` đã có code nên nó build được bình thường.
 
-### Task #2, #3, #4 — Bổ sung code cho ba microservice
+### Task #2, #3, #4 - Bổ sung code cho ba microservice
 
 | Microservice | Project | Số tệp |
 |---|---|---|
@@ -124,7 +124,7 @@ biên dịch. Sau bài 5 và bài 6, các `.Api` đã có code nên nó build đ
 | **ChatService** (Task #3) | `ChatService` · `ChatService.Api` | 17 · 2 |
 | **DashboardService** (Task #4) | `DashboardService` · `.Api` · `.Test` | 32 · 10 · 9 |
 
-Ba project của `DashboardService` là **mới hoàn toàn** — microservice này chưa có trong bài 4, nay đã
+Ba project của `DashboardService` là **mới hoàn toàn** - microservice này chưa có trong bài 4, nay đã
 tạo và thêm vào solution. Solution tăng từ **25 lên 29 project**.
 
 Đối chiếu SHA-256: **86/86 tệp** trong 6 tệp nén thầy gửi trùng khớp 100% với
@@ -134,7 +134,7 @@ giống kết quả ở bài 4 và bài 5.
 ### Ba chỗ phải xử lý thêm để solution không còn lỗi
 
 **1. Phải bổ sung `PolicyService.Api` (16 tệp).**
-`ChatService` và `DashboardService` đều lắng nghe sự kiện `PolicyCreated` — lớp này nằm trong
+`ChatService` và `DashboardService` đều lắng nghe sự kiện `PolicyCreated` - lớp này nằm trong
 `PolicyService.Api`, mà project đó vẫn còn rỗng từ bài 4. Không có `PolicyCreated` thì hai service
 vừa thêm **không biên dịch được**, trong khi đề yêu cầu *"solution không còn lỗi liên quan đến những
 project vừa thêm"*. Đã lấy từ dự án gốc, giữ lại `AssemblyMarker.cs` mà `PolicyService` đang dùng.
@@ -154,12 +154,12 @@ thật thì hai thứ trùng tên, MSBuild báo lỗi `MSB5004: The solution fil
 
 Đề bài viết khóa định tuyến là `"ReRoutes"`. Đó là tên dùng cho **Ocelot từ bản 17 trở về trước**;
 từ **Ocelot 18** khóa này đổi thành `"Routes"`. Bản đang dùng là **23.3.3** nên tệp `ocelot.json`
-giữ khóa `"Routes"` — nếu đổi thành `"ReRoutes"` thì Ocelot **không đọc được cấu hình định tuyến**
+giữ khóa `"Routes"` - nếu đổi thành `"ReRoutes"` thì Ocelot **không đọc được cấu hình định tuyến**
 và cổng API sẽ không chuyển tiếp được yêu cầu nào. Nội dung từng tuyến vẫn đúng như hướng dẫn.
 
 ---
 
-## Bài thực hành số 5 — Dịch vụ Discovery và cài đặt Eureka
+## Bài thực hành số 5 - Dịch vụ Discovery và cài đặt Eureka
 
 > Phần này là nội dung **mới nhất**. Nội dung bài thực hành số 4 nằm ở các mục phía dưới.
 
@@ -167,7 +167,7 @@ và cổng API sẽ không chuyển tiếp được yêu cầu nào. Nội dung 
 
 ![PricingService đã đăng ký với Eureka](docs/eureka-dang-ky.png)
 
-### Task #1 — Bổ sung code cho microservice PricingService
+### Task #1 - Bổ sung code cho microservice PricingService
 
 | Nội dung | Kết quả |
 |---|---|
@@ -176,20 +176,20 @@ và cổng API sẽ không chuyển tiếp được yêu cầu nào. Nội dung 
 | Thêm `PricingService.IntegrationTest` vào solution | ✅ solution: 24 → **25 project** |
 | Build 4 project | ✅ **0 Error** |
 | Kiểm thử đơn vị (`PricingService.Test`) | ✅ **10/10 Passed** |
-| Kiểm thử tích hợp (`PricingService.IntegrationTest`) | ✅ **2/2 Passed** — tự dựng PostgreSQL riêng bằng Testcontainers |
+| Kiểm thử tích hợp (`PricingService.IntegrationTest`) | ✅ **2/2 Passed** - tự dựng PostgreSQL riêng bằng Testcontainers |
 | Gọi thử `POST /api/Pricing` | ✅ **totalPrice = 98.00** (C1=26, C2=52, C3=20) |
 
 ![Build và kiểm thử PricingService](docs/bai5-build-test.png)
 
 **Nguồn phần code bổ sung.** Ba tệp nén thầy gửi chỉ chứa `.Api`, `.Test`, `.IntegrationTest`,
 nhưng bộ test lại tham chiếu `PricingService.Domain`, `CalculatePriceHandler`, `PricingController`,
-`IDataStore` — những lớp nằm trong project **triển khai** mà các tệp nén không có. Đối chiếu
+`IDataStore` - những lớp nằm trong project **triển khai** mà các tệp nén không có. Đối chiếu
 SHA-256 cho thấy **17/17 tệp thầy gửi trùng khớp 100%** với
 [`asc-lab/dotnetcore-microservices-poc`](https://github.com/asc-lab/dotnetcore-microservices-poc),
 nên phần triển khai được lấy đúng từ dự án đó. Kết quả **10/10 unit test** và **2/2 integration
 test** Passed xác nhận là khớp ở cả mức lớp lẫn mức hệ thống.
 
-### Task #2 — Cài đặt và cấu hình Eureka
+### Task #2 - Cài đặt và cấu hình Eureka
 
 | # | Yêu cầu của đề | Kết quả |
 |---|---|---|
@@ -198,12 +198,12 @@ test** Passed xác nhận là khớp ở cả mức lớp lẫn mức hệ thố
 | 3.1 | Thêm gói Steeltoe (Bước 1) | ✅ `Steeltoe.Discovery.ClientBase` + `.Eureka` 3.2.7 |
 | 3.2 | `AddDiscoveryClient` trong `Startup.cs` (Bước 2) | ✅ trong `ConfigureServices` |
 | 3.3 | Cấu hình `appsettings.json` (Bước 3) | ✅ `Spring.Application.Name`, `Eureka.Client`, `Eureka.Instance` |
-| 3.4 | Chạy dịch vụ, kiểm tra trên Eureka (Bước 4) | ✅ **PRICINGSERVICE — UP** tại `localhost:PricingService:5040` |
+| 3.4 | Chạy dịch vụ, kiểm tra trên Eureka (Bước 4) | ✅ **PRICINGSERVICE - UP** tại `localhost:PricingService:5040` |
 
 ### Chạy lại toàn bộ bài 5
 
 **Cần có trước:** Docker Desktop và **.NET 8 Runtime**
-([tải tại đây](https://dotnet.microsoft.com/download/dotnet/8.0)) — bốn project của PricingService
+([tải tại đây](https://dotnet.microsoft.com/download/dotnet/8.0)) - bốn project của PricingService
 để `net8.0` theo đúng code mẫu, xem lý do ở mục 5 bên dưới. Kiểm tra nhanh bằng
 `dotnet --list-runtimes`, cần thấy dòng `Microsoft.AspNetCore.App 8.x`.
 
@@ -225,14 +225,14 @@ with Eureka*.
 
 **1. Không gọi được `app.UseDiscoveryClient()`.**
 Lời gọi này thuộc **Steeltoe 2.x**; từ **Steeltoe 3.0** đã bị gỡ. Bản đang dùng (3.2.7) chỉ còn
-`AddDiscoveryClient` và `AddServiceDiscovery` — kiểm chứng được trong `Steeltoe.Discovery.ClientBase.xml`
+`AddDiscoveryClient` và `AddServiceDiscovery` - kiểm chứng được trong `Steeltoe.Discovery.ClientBase.xml`
 của chính gói đó. Lý do Steeltoe bỏ: `AddDiscoveryClient()` đã tự đăng ký một `IHostedService` lo
 việc đăng ký và huỷ đăng ký instance theo vòng đời ứng dụng. Cố gọi thì **không biên dịch được**.
-Thực tế chứng minh cách hiện tại là đủ — dịch vụ vẫn UP trên Eureka.
+Thực tế chứng minh cách hiện tại là đủ - dịch vụ vẫn UP trên Eureka.
 
 **2. `eureka-server/Dockerfile` phải đổi image nền.**
 Bản gốc dùng `openjdk:8-jre-slim`. Image `openjdk` đã ngừng phát hành và các thẻ JRE cũ không còn
-trên Docker Hub (`not found`), nên đổi sang `eclipse-temurin:8-jre` — vẫn là JRE 8 chính chủ của
+trên Docker Hub (`not found`), nên đổi sang `eclipse-temurin:8-jre` - vẫn là JRE 8 chính chủ của
 Eclipse Adoptium, mã nguồn Eureka không phải sửa dòng nào.
 
 **3. Sửa một lỗi tiềm ẩn phát hiện khi chạy kiểm thử tích hợp.**
@@ -245,16 +245,16 @@ pipeline. Sau khi sửa **2/2 Passed**, dịch vụ vẫn đăng ký Eureka bìn
 
 **4. Chuỗi kết nối PostgreSQL cần `SSL Mode=Disable`.**
 Không có tham số này, Npgsql thử bắt tay SSL với container không bật SSL và treo đến khi hết giờ
-(`Failed to connect to 127.0.0.1:5433 — The operation has timed out`), dù cổng vẫn mở.
+(`Failed to connect to 127.0.0.1:5433 - The operation has timed out`), dù cổng vẫn mở.
 
 **5. Bốn project của PricingService giữ `net8.0`.**
 Các project khác dùng .NET 10, nhưng code mẫu thầy gửi khai báo `net8.0` và đề bài yêu cầu thao tác
-trên `Startup.cs` — lớp này không còn trong mô hình *minimal hosting* của .NET mới. Đề cũng khuyên
+trên `Startup.cs` - lớp này không còn trong mô hình *minimal hosting* của .NET mới. Đề cũng khuyên
 *"đổi lại tên cho phù hợp với code mẫu thầy gửi"*. Máy có sẵn ASP.NET Core Runtime 8.0.31.
 
 ---
 
-# Bài thực hành số 4 — Cài đặt môi trường
+# Bài thực hành số 4 - Cài đặt môi trường
 
 ## 1. Quy tắc tổ chức source code (Task #1)
 
@@ -262,9 +262,9 @@ Mỗi microservice có **đúng 3 project** theo quy tắc đề bài:
 
 | Project | Vai trò | Loại |
 |---|---|---|
-| `XxxService.Api` | **Định nghĩa API** — các lệnh (Command), truy vấn (Query), sự kiện (Event) và lớp truyền dữ liệu (DTO) mà dịch vụ phơi ra ngoài. Đây là phần *cổng* (port) trong kiến trúc Ports & Adapters. | Class Library |
-| `XxxService` | **Triển khai** — command handler, query handler, notification handler, mô hình miền; các *bộ điều hợp*: Controller (HTTP đến), Listener (sự kiện qua hàng đợi), REST client (HTTP đi). | ASP.NET Core Web API |
-| `XxxService.Test` | **Kiểm thử** — unit test và integration test. | xUnit |
+| `XxxService.Api` | **Định nghĩa API** - các lệnh (Command), truy vấn (Query), sự kiện (Event) và lớp truyền dữ liệu (DTO) mà dịch vụ phơi ra ngoài. Đây là phần *cổng* (port) trong kiến trúc Ports & Adapters. | Class Library |
+| `XxxService` | **Triển khai** - command handler, query handler, notification handler, mô hình miền; các *bộ điều hợp*: Controller (HTTP đến), Listener (sự kiện qua hàng đợi), REST client (HTTP đi). | ASP.NET Core Web API |
+| `XxxService.Test` | **Kiểm thử** - unit test và integration test. | xUnit |
 
 Chiều phụ thuộc: `XxxService.Test` → `XxxService` → `XxxService.Api`
 (project triển khai phụ thuộc vào định nghĩa API, **không bao giờ ngược lại**).
@@ -276,7 +276,7 @@ Chiều phụ thuộc: `XxxService.Test` → `XxxService` → `XxxService.Api`
 | 3 | `AuthService` | Xác thực người dùng, cấp JWT |
 | 4 | `ChatService` | Trò chuyện giữa nhân viên hỗ trợ (SignalR) |
 | 5 | `PricingService` | Tính giá sản phẩm bảo hiểm |
-| 6 | `PolicyService` | Dịch vụ chính — tạo báo giá và hợp đồng |
+| 6 | `PolicyService` | Dịch vụ chính - tạo báo giá và hợp đồng |
 | 7 | `PolicySearchService` | Tìm kiếm hợp đồng, lập chỉ mục trên Elasticsearch |
 | 8 | `PaymentService` | Tài khoản chính sách, khoản thanh toán |
 | 9 | `ProductService` | Danh mục sản phẩm bảo hiểm |
@@ -312,7 +312,7 @@ DotNetMicroservicesPoc/
 | 9 | Thư mục `Web` | ✅ add vào solution (Solution Folder) |
 | 10 | Thư mục `BlazorWasmClient` | ✅ add vào solution (Solution Folder) |
 | 11 | Thư mục `AgentPortalApiGateway` | ✅ add vào solution (Solution Folder) |
-| — | **Build hệ thống** | ✅ **Build succeeded — 0 Warning(s), 0 Error(s)** |
+| - | **Build hệ thống** | ✅ **Build succeeded - 0 Warning(s), 0 Error(s)** |
 
 ### Chạy toàn bộ hạ tầng
 
@@ -345,11 +345,11 @@ dotnet build DotNetMicroservicesPoc.sln
 
 **1. Nguồn của 6 thư mục bổ sung (Task #2.6 → #2.11).**
 Sáu thư mục `eureka-server`, `postgres`, `scripts`, `Web`, `BlazorWasmClient`,
-`AgentPortalApiGateway` được giải nén **trực tiếp từ 6 file `.rar` thầy đính kèm trên Elearning**
-— tổng cộng **159 file, không sửa một ký tự nào**.
+`AgentPortalApiGateway` được giải nén **trực tiếp từ 6 file `.rar` thầy đính kèm trên Elearning** -
+tổng cộng **159 file, không sửa một ký tự nào**.
 Có đối chiếu thêm bằng SHA-256 từng file với dự án mã nguồn mở
 [`asc-lab/dotnetcore-microservices-poc`](https://github.com/asc-lab/dotnetcore-microservices-poc)
-của Altkom Software & Consulting — chính là công ty được nhắc tới trong phần mở đầu của đề bài:
+của Altkom Software & Consulting - chính là công ty được nhắc tới trong phần mở đầu của đề bài:
 **trùng khớp 100% trên cả 159 file**. Vậy case study của đề được xây trên đúng dự án đó, nên khi
 cần tra cứu cách các service thật giao tiếp với nhau thì đọc được trực tiếp mã nguồn dự án gốc.
 `postgres/createdatabases.sql` dùng đúng bản của thầy (giữ nguyên xuống dòng LF).
@@ -357,14 +357,14 @@ cần tra cứu cách các service thật giao tiếp với nhau thì đọc đ�
 **2. Cả 6 thư mục đều nằm trong solution, nhưng dưới dạng Solution Folder.**
 Cả 6 thư mục đã được add vào `DotNetMicroservicesPoc.sln` (159 file) nên mở Visual Studio là thấy
 đầy đủ. Với 4 thư mục `eureka-server` (Java/Gradle), `postgres` (SQL + Dockerfile), `scripts`
-(shell + yml), `Web` (VueJS) thì Solution Folder là **cách duy nhất** — chúng không phải project
+(shell + yml), `Web` (VueJS) thì Solution Folder là **cách duy nhất** - chúng không phải project
 .NET nên không có `.csproj` để add.
 
 Riêng `AgentPortalApiGateway` và `BlazorWasmClient` tuy là project .NET nhưng `.csproj` của chúng
 **không** được đăng ký làm project build, vì hai lý do:
 1. Chúng tham chiếu các project `.Api` theo bố cục thư mục phẳng của dự án gốc
    (`PolicyService.Api/PolicyService.Api.csproj`), không khớp bố cục `src/<Service>/<Service>.Api/`
-   mà Task #1 yêu cầu — `dotnet sln add` báo lỗi không tìm thấy project.
+   mà Task #1 yêu cầu - `dotnet sln add` báo lỗi không tìm thấy project.
 2. Kể cả sửa đường dẫn, chúng vẫn tham chiếu các kiểu dữ liệu thật (`CreateOfferResult`,
    `PersonDto`, `GetPolicyDetailsQueryResult`) nằm trong các project `.Api` mà Task #1 quy định rõ
    *"chỉ tạo tên, chưa viết code"* nên còn rỗng → sinh **57 lỗi `CS0246`**.
@@ -389,7 +389,7 @@ Từ MediatR 13 (2025) thư viện chuyển sang giấy phép thương mại. B�
 
 **6. Cổng hạ tầng khác mặc định.**
 Máy đã có sẵn PostgreSQL 16 ở 5432 và một RabbitMQ của đồ án khác ở 5672. Để không đụng độ, hạ tầng
-bài này dùng 5433 và 5673/15673 — khai báo đầy đủ trong `docker-compose.yml`.
+bài này dùng 5433 và 5673/15673 - khai báo đầy đủ trong `docker-compose.yml`.
 
 **7. `dotnet new sln` trên .NET 10 mặc định sinh `.slnx`.**
 Đã dùng `--format sln` để tạo file `.sln` cổ điển cho Visual Studio / Rider bản cũ đọc được.
