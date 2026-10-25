@@ -1,7 +1,7 @@
-# DotNetMicroservicesPoc — Bài thực hành số 4 và số 5
+# DotNetMicroservicesPoc — Bài thực hành số 4, 5 và 6
 
 **Case study: Cài đặt kiến trúc Microservices trên .NET Core (bài toán đại lý bảo hiểm)**
-Phần 2 — Cài đặt môi trường · Phần 3 — Dịch vụ Discovery và cài đặt Eureka
+Phần 2 — Cài đặt môi trường · Phần 3 — Dịch vụ Discovery và Eureka · Phần 4 — API Gateway với Ocelot
 
 | | |
 |---|---|
@@ -11,7 +11,7 @@ Phần 2 — Cài đặt môi trường · Phần 3 — Dịch vụ Discovery v�
 | Nhóm | Nhóm 11 |
 | Môn | Thực hành Kiến trúc và Thiết kế phần mềm |
 | GVHD | ThS. Cao Thanh Xuân |
-| Ngày | 11/10/2026 (bài 4) · 18/10/2026 (bài 5) |
+| Ngày | 11/10/2026 (bài 4) · 18/10/2026 (bài 5) · 25/10/2026 (bài 6) |
 
 ---
 
@@ -21,11 +21,11 @@ Repository này chứa **cả hai** bài thực hành:
 
 | Bài | Nội dung | Trạng thái |
 |---|---|---|
+| **Số 6** (25/10/2026) | API Gateway với Ocelot; bổ sung AuthService, ChatService, DashboardService | ✅ Solution **29 project**, build **0 Error**; Ocelot cấu hình khớp đề |
 | **Số 5** (18/10/2026) | Dịch vụ Discovery — cài đặt Eureka, bổ sung code `PricingService` | ✅ Eureka chạy ở `localhost:8761`, **PRICINGSERVICE — UP**; build 0 lỗi, **10/10 unit test** + **2/2 integration test Passed** |
 | **Số 4** (11/10/2026) | Cài đặt môi trường — solution, MediatR, PostgreSQL, RabbitMQ, Elasticsearch, Docker | ✅ **25 project**, build **0 Warning, 0 Error** |
 
-→ Nội dung bài 5 ở [mục ngay bên dưới](#bài-thực-hành-số-5--dịch-vụ-discovery-và-cài-đặt-eureka);
-nội dung bài 4 ở [phần sau đó](#bài-thực-hành-số-4--cài-đặt-môi-trường).
+→ [Bài 6](#bài-thực-hành-số-6--api-gateway-với-ocelot) · [Bài 5](#bài-thực-hành-số-5--dịch-vụ-discovery-và-cài-đặt-eureka) · [Bài 4](#bài-thực-hành-số-4--cài-đặt-môi-trường)
 
 ### Bài thực hành số 4 — kết quả build
 
@@ -85,6 +85,77 @@ dotnet build DotNetMicroservicesPoc.sln       # build 24 project
 <td colspan="2"><img src="docs/csdl-postgresql.png" alt="Các CSDL trong PostgreSQL"><br><sub><b>4 CSDL tạo theo <code>createdatabases.sql</code> — Task #2.7</b></sub></td>
 </tr>
 </table>
+
+---
+
+## Bài thực hành số 6 — API Gateway với Ocelot
+
+> Phần này là nội dung **mới nhất**.
+
+**Solution 29 project, build 0 Error.** Sản phẩm nộp của bài này là chính repository này.
+
+![Build toàn bộ solution sau bài 6](docs/bai6-build-solution.png)
+
+### Task #1 — Cài đặt và cấu hình Ocelot cho `AgentPortalApiGateway`
+
+| Yêu cầu của đề | Kết quả |
+|---|---|
+| Gói `Ocelot.Provider.Eureka` | ✅ bản 23.3.3 |
+| Gói `Ocelot.Cache.CacheManager` | ✅ bản 23.3.3 |
+| Tệp `ocelot.json` | ✅ 7 tuyến định tuyến |
+| `Program.cs` — `UseUrls("http://localhost:8099")` | ✅ |
+| `Program.cs` — `AddOcelot().AddEureka().AddCacheManager(x => x.WithDictionaryHandle())` | ✅ |
+| `Program.cs` — `a.UseOcelot().Wait()` | ✅ |
+| `Program.cs` — `AddJsonFile("ocelot.json", false, false)` | ✅ |
+| `appsettings.json` — `spring.application.name` = `Agent-Portal-Api-Gateway` | ✅ |
+| `appsettings.json` — `eureka.client.serviceUrl` / `shouldRegisterWithEureka` / `validateCertificates` | ✅ |
+| `GlobalConfiguration` — `RequestIdKey`, `AdministrationPath`, `UseServiceDiscovery`, `ServiceDiscoveryProvider` | ✅ khớp 100% |
+| Tuyến `[serviceHost:port]/api/Products/{code}` → `ProductService` | ✅ |
+
+`AgentPortalApiGateway` nay đã là **project thật trong solution**. Ở bài 4 nó mới chỉ nằm trong
+repository dưới dạng Solution Folder, vì lúc đó các project `.Api` còn rỗng nên đưa vào sẽ sinh lỗi
+biên dịch. Sau bài 5 và bài 6, các `.Api` đã có code nên nó build được bình thường.
+
+### Task #2, #3, #4 — Bổ sung code cho ba microservice
+
+| Microservice | Project | Số tệp |
+|---|---|---|
+| **AuthService** (Task #2) | `AuthService` | 16 |
+| **ChatService** (Task #3) | `ChatService` · `ChatService.Api` | 17 · 2 |
+| **DashboardService** (Task #4) | `DashboardService` · `.Api` · `.Test` | 32 · 10 · 9 |
+
+Ba project của `DashboardService` là **mới hoàn toàn** — microservice này chưa có trong bài 4, nay đã
+tạo và thêm vào solution. Solution tăng từ **25 lên 29 project**.
+
+Đối chiếu SHA-256: **86/86 tệp** trong 6 tệp nén thầy gửi trùng khớp 100% với
+[`asc-lab/dotnetcore-microservices-poc`](https://github.com/asc-lab/dotnetcore-microservices-poc),
+giống kết quả ở bài 4 và bài 5.
+
+### Ba chỗ phải xử lý thêm để solution không còn lỗi
+
+**1. Phải bổ sung `PolicyService.Api` (16 tệp).**
+`ChatService` và `DashboardService` đều lắng nghe sự kiện `PolicyCreated` — lớp này nằm trong
+`PolicyService.Api`, mà project đó vẫn còn rỗng từ bài 4. Không có `PolicyCreated` thì hai service
+vừa thêm **không biên dịch được**, trong khi đề yêu cầu *"solution không còn lỗi liên quan đến những
+project vừa thêm"*. Đã lấy từ dự án gốc, giữ lại `AssemblyMarker.cs` mà `PolicyService` đang dùng.
+
+**2. Phải sửa đường dẫn `ProjectReference` tới `PolicyService.Api`.**
+Code gốc dùng bố cục **phẳng** (`PolicyService.Api` nằm cạnh `ChatService`) nên khai báo
+`..\PolicyService.Api\PolicyService.Api.csproj`. Solution này dùng bố cục
+`src/<Service>/<Project>/` nên phải sửa thành `..\..\PolicyService\PolicyService.Api\…`,
+nếu không `dotnet build` báo không tìm thấy project.
+
+**3. Phải gỡ Solution Folder `AgentPortalApiGateway`.**
+Bài 4 thêm thư mục này dưới dạng Solution Folder (thư mục ảo). Khi bài 6 đưa nó vào làm project
+thật thì hai thứ trùng tên, MSBuild báo lỗi `MSB5004: The solution file has two projects named
+"AgentPortalApiGateway"`. Đã gỡ thư mục ảo, giữ project thật.
+
+### Một điểm khác biệt với hướng dẫn: `ReRoutes` → `Routes`
+
+Đề bài viết khóa định tuyến là `"ReRoutes"`. Đó là tên dùng cho **Ocelot từ bản 17 trở về trước**;
+từ **Ocelot 18** khóa này đổi thành `"Routes"`. Bản đang dùng là **23.3.3** nên tệp `ocelot.json`
+giữ khóa `"Routes"` — nếu đổi thành `"ReRoutes"` thì Ocelot **không đọc được cấu hình định tuyến**
+và cổng API sẽ không chuyển tiếp được yêu cầu nào. Nội dung từng tuyến vẫn đúng như hướng dẫn.
 
 ---
 
