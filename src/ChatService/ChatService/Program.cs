@@ -1,34 +1,28 @@
-var builder = WebApplication.CreateBuilder(args);
+﻿using System.IO;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 
-// Add services to the container.
+namespace ChatService;
 
-builder.Services.AddControllers();
-
-// --- Task #2.1: dang ky MediatR vao DI container ---
-// De bai goi y "services.AddMediatR() trong lop Startup, phuong thuc ConfigureServices".
-// .NET 10 dung mo hinh minimal hosting nen khong con lop Startup; cho dang ky tuong duong
-// la builder.Services ngay trong Program.cs (xem ghi chu trong BAOCAO.md).
-builder.Services.AddMediatR(cfg =>
+public class Program
 {
-    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
-    cfg.RegisterServicesFromAssembly(typeof(ChatService.Api.AssemblyMarker).Assembly);
-});
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+    public static void Main(string[] args)
+    {
+        CreateWebHostBuilder(args).Build().Run();
+    }
 
-var app = builder.Build();
+    private static IWebHostBuilder CreateWebHostBuilder(string[] args)
+    {
+        var config = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("hosting.json", true)
+            .AddJsonFile("appsettings.json", true)
+            .AddCommandLine(args)
+            .Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
+        return WebHost.CreateDefaultBuilder(args)
+            .UseConfiguration(config)
+            .UseStartup<Startup>();
+    }
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
-
